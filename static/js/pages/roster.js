@@ -6,6 +6,7 @@ import { store } from '../lib/store.js';
 import { perform } from '../lib/actions.js';
 import { parseCsv, parseWorkbook } from '../lib/xlsx-read.js';
 import { columnName, download } from '../lib/xlsx-write.js';
+import { crumb } from './home.js';
 
 /** 名单字段与中文表头。 */
 const FIELDS = [['id', '学号'], ['name', '姓名'], ['dept', '院系'], ['cls', '班级']];
@@ -39,6 +40,7 @@ export function renderRoster() {
     .sort((a, b) => String(a).localeCompare(b, 'zh-CN'));
 
   return html`
+    ${raw(crumb('学员名单'))}
     <div class="ro-bar">
       <h2>学员名单</h2>
       <button class="ro-main" data-action="import-roster">导入名单</button>

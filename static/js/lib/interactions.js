@@ -64,6 +64,29 @@ export async function handleClick(event) {
     }
   }
 
+  // 切换页面（顶部导航与首页快捷入口共用）
+  const pageButton = target.closest('[data-page]');
+  if (pageButton) {
+    event.preventDefault();
+    if (pageButton.dataset.page === 'events') {
+      const { openEventList } = await import('../pages/events.js');
+      await openEventList();
+    } else {
+      const { go } = await import('./navigation.js');
+      await go(pageButton.dataset.page);
+    }
+    return;
+  }
+
+  // 名单翻页
+  const turnButton = target.closest('[data-turn]');
+  if (turnButton) {
+    event.preventDefault();
+    const { turnPage } = await import('../pages/roster.js');
+    turnPage(Number(turnButton.dataset.turn));
+    return;
+  }
+
   // 登记与更正学分（学分总表中的单元格，比单纯打开活动更具体）
   const markButton = target.closest('[data-student][data-event]');
   if (markButton) {
@@ -193,12 +216,6 @@ export async function handleChange(event) {
     const { loadFile } = await import('../pages/roster.js');
     await loadFile(rosterFile.files?.[0]);
     return;
-  }
-
-  const turnButton = target.closest('[data-turn]');
-  if (turnButton) {
-    const { turnPage } = await import('../pages/roster.js');
-    turnPage(Number(turnButton.dataset.turn));
   }
 }
 
