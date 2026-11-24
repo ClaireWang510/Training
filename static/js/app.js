@@ -8,24 +8,11 @@ import { isBusy, refresh } from './lib/actions.js';
 import { render } from './lib/renderer.js';
 import { handleChange, handleClick, handleInput, handleSubmit } from './lib/interactions.js';
 
-const navElement = document.getElementById('nav');
 const appElement = document.getElementById('app');
 
 /** 绑定全局事件。 */
 function bindGlobalEvents() {
-  navElement.addEventListener('click', async (event) => {
-    const button = event.target.closest('button[data-page]');
-    if (!button) return;
-    const { go } = await import('./lib/navigation.js');
-    if (button.dataset.page === 'events') {
-      const { openEventList } = await import('./pages/events.js');
-      await openEventList();
-    } else {
-      await go(button.dataset.page);
-    }
-  });
-
-  // 主内容区与对话框内的交互统一交给交互路由处理
+  // 导航栏与主内容区、对话框内的交互统一交给交互路由处理
   document.body.addEventListener('click', (event) => {
     handleClick(event).catch((error) => toast(error.message));
   });
