@@ -1,0 +1,58 @@
+/* 设计变量：颜色、排版、间距的唯一来源。
+   各页面样式表只引用变量，不直接写死颜色值。 */
+
+:root {
+  /* 品牌色 */
+  --red: #870e25;
+  --red-dark: #6c0c1f;
+  --red-deep: #790e23;
+  --red-soft: #f2e4e5;
+  --red-text: #881828;
+  --red-muted: #822038;
+
+  /* 中性色 */
+  --ink: #211f20;
+  --ink-soft: #292523;
+  --line: #dfddda;
+  --line-strong: #aaa5a0;
+  --soft: #f6f5f2;
+  --page: #faf9f7;
+  --surface: #ffffff;
+  --muted: #66635f;
+  --muted-soft: #a6a29e;
+  --muted-strong: #76716c;
+  --table-head: #eeede9;
+  --table-sticky: #f8f7f4;
+
+  /* 语义色 */
+  --success: #58665b;
+  --success-soft: #e8ede9;
+  --success-text: #3e6257;
+  --danger: #8f1624;
+  --danger-soft: #8c2c32;
+
+  /* 排版 */
+  --serif: "Songti SC", "STSong", "Noto Serif CJK SC", "SimSun", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono-tabular: Georgia, serif;
+
+  /* 间距 */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 20px;
+  --gap-xl: 32px;
+
+  /* 圆角 */
+  --radius-sm: 3px;
+  --radius: 4px;
+  --radius-lg: 8px;
+
+  /* 布局 */
+  --page-max: 1376px;
+  --page-pad: clamp(22px, 5.3vw, 82px);
+
+  /* 层级 */
+  --z-sticky: 2;
+  --z-toast: 99999;
+}

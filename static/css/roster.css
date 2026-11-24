@@ -1,0 +1,157 @@
+/* 学员名单视图：名单浏览、分班调整、名单导入向导。 */
+
+.ro-bar,
+.ro-filter,
+.ro-maps,
+.ro-pages,
+.ro-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-md);
+}
+
+.ro-bar,
+.ro-pages {
+  justify-content: space-between;
+}
+
+.ro-bar {
+  margin: 0 0 22px;
+}
+
+.ro-bar h2 {
+  margin: 0;
+}
+
+.ro-filter {
+  margin: 14px 0;
+}
+
+.ro-wrap {
+  border-top: 1px solid #dbd6cf;
+  overflow: auto;
+}
+
+.ro-wrap table {
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.ro-wrap th,
+.ro-wrap td {
+  border-bottom: 1px solid #e9e6e1;
+  font-size: 14px;
+  padding: 13px 14px;
+}
+
+.ro-wrap th {
+  background: var(--soft);
+  color: #615d58;
+  font-weight: 600;
+}
+
+.ro-wrap td:first-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.ro-wrap td:nth-child(2) {
+  font-weight: 550;
+}
+
+.ro-filter input,
+.ro-filter select,
+.ro-maps select,
+.ro-sel {
+  background: #fff;
+  border: 1px solid #cfcac4;
+  border-radius: var(--radius);
+  color: #252525;
+  font: inherit;
+  padding: 8px 11px;
+}
+
+.ro-maps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  margin: 15px 0;
+}
+
+.ro-maps label,
+.ro-input-label {
+  display: grid;
+  font-size: 14px;
+  gap: 6px;
+}
+
+.ro-maps select {
+  max-width: 100%;
+}
+
+.ro-main,
+.ro-btn {
+  background: #fff;
+  border: 1px solid #d2ccc6;
+  border-radius: var(--radius);
+  color: #373330;
+  cursor: pointer;
+  font: inherit;
+  padding: 9px 15px;
+}
+
+.ro-main {
+  background: #841e2c;
+  border-color: #841e2c;
+  color: #fff;
+}
+
+.ro-main:disabled,
+.ro-btn:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+
+.ro-pages {
+  color: #605b58;
+  font-size: 14px;
+  margin-top: var(--gap-lg);
+}
+
+.ro-pages .ro-btn {
+  padding: 6px 12px;
+}
+
+.ro-summary,
+.ro-note {
+  color: #615a56;
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 14px 0;
+}
+
+.ro-summary strong {
+  color: #211e1b;
+}
+
+.ro-import-preview {
+  max-height: 260px;
+  overflow: auto;
+}
+
+.ro-issue {
+  color: var(--danger-soft);
+}
+
+.ro-upload {
+  border: 1px dashed #c2b7ab;
+  border-radius: 6px;
+  display: grid;
+  gap: var(--gap-md);
+  padding: var(--gap-lg);
+}
+
+.ro-actions {
+  margin-top: 18px;
+}

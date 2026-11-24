@@ -1,0 +1,191 @@
+/* 通用组件：按钮、表单、表格、对话框、提示条、页面标题区。 */
+
+/* 按钮 */
+.btn,
+button.primary,
+.primary {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid #cecac5;
+  border-radius: var(--radius);
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 550;
+  gap: 6px;
+  justify-content: center;
+  padding: 7px 14px;
+}
+
+.btn:hover {
+  background: #f1eeea;
+}
+
+.btn.primary,
+button.primary {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: var(--red-dark);
+}
+
+.btn:disabled,
+.primary:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+
+.link {
+  color: var(--red);
+  padding: 5px 0;
+}
+
+/* 区块标题与操作条 */
+.sectionhead,
+.toolbar,
+.actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-md);
+  justify-content: space-between;
+}
+
+.sectionhead {
+  border-bottom: 1px solid var(--line-strong);
+  min-height: 46px;
+  padding-bottom: 13px;
+}
+
+.sectionhead h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 650;
+}
+
+.pagehead {
+  margin: 12px 0 22px;
+}
+
+.pagehead h1 {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 650;
+}
+
+/* 表单 */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+textarea {
+  background: var(--surface);
+  border: 1px solid #c9c5c1;
+  border-radius: var(--radius);
+  color: var(--ink);
+  max-width: 100%;
+  padding: 8px 10px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin: 14px 0;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+}
+
+.actions {
+  justify-content: flex-end;
+  margin-top: var(--gap-lg);
+}
+
+/* 表格 */
+.tablewrap {
+  overflow: auto;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 14px;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 10px;
+  text-align: left;
+}
+
+th {
+  background: var(--table-head);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 对话框 */
+dialog {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+  max-height: 88vh;
+  padding: 0;
+  width: min(660px, 94vw);
+}
+
+dialog::backdrop {
+  background: #21171b66;
+}
+
+.dlghead {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 24px;
+}
+
+.dlghead h2 {
+  font: 600 23px var(--serif);
+}
+
+#dialogBody {
+  padding: 12px 24px 24px;
+}
+
+/* 提示条 */
+#toastbox {
+  background: var(--ink-soft);
+  border-radius: var(--radius);
+  bottom: 30px;
+  color: #fff;
+  left: 50%;
+  padding: 9px 18px;
+  pointer-events: none;
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+}
+
+/* 表格内可点击单元格 */
+.ledgercell {
+  border-bottom: 1px dotted #b99f9e;
+  padding: 4px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ledgercell:hover {
+  color: var(--red);
+}
+
+@media (max-width: 520px) {
+  #dialogBody {
+    padding: 10px 15px 18px;
+  }
+}

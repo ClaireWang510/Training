@@ -1,0 +1,25 @@
+# 用户级 systemd 服务。按实际部署路径调整 /opt/training。
+[Unit]
+Description=Student training office (gunicorn)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+WorkingDirectory=/opt/training
+EnvironmentFile=/opt/training/.env
+Environment=TRAINING_DATA=/opt/training/data
+Environment=PATH=/opt/training/.venv/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/training/.venv/bin/gunicorn --bind 0.0.0.0:8003 --workers 3 --threads 2 --timeout 90 --access-logfile - --error-logfile - wsgi:application
+Restart=always
+RestartSec=3
+TimeoutStopSec=30
+KillSignal=SIGTERM
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/opt/training/data
+
+[Install]
+WantedBy=default.target

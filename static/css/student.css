@@ -1,0 +1,240 @@
+/* 学员视图：登录、活动报名、我的学分。 */
+
+.st-shell {
+  color: var(--ink);
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.st-shell h2 {
+  font: 600 clamp(1.6rem, 3vw, 2.2rem)/1.4 var(--serif);
+  margin: 0.5rem 0 1rem;
+}
+
+.st-login {
+  margin: clamp(1.6rem, 7vh, 5rem) auto;
+  max-width: 410px;
+  padding: 0 12px;
+}
+
+.st-login form {
+  display: grid;
+  gap: var(--gap-lg);
+}
+
+.st-login label {
+  display: grid;
+  gap: 7px;
+}
+
+.st-shell input:not([type="checkbox"]):not([type="radio"]),
+.st-shell textarea {
+  background: #fff;
+  border: 1px solid #c9c6c2;
+  border-radius: 5px;
+  box-sizing: border-box;
+  color: #242424;
+  font: inherit;
+  padding: 11px 13px;
+  width: 100%;
+}
+
+.st-meta,
+.st-main small,
+.st-date small,
+.st-credit small {
+  color: #67635e;
+  font-size: 0.875rem;
+}
+
+.st-error,
+.st-required {
+  color: var(--danger);
+}
+
+.st-error:empty {
+  display: none;
+}
+
+.st-required {
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.st-user {
+  align-items: flex-start;
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+.st-user p {
+  margin: 0 0 1rem;
+}
+
+.st-tabs {
+  border-bottom: 1px solid #d8d4cf;
+  display: flex;
+  gap: 26px;
+  margin: 10px 0 18px;
+}
+
+.st-tabs button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #625e59;
+  cursor: pointer;
+  font: inherit;
+  padding: 11px 0;
+}
+
+.st-tabs button[aria-selected="true"] {
+  border-bottom-color: #8b1728;
+  color: #8b1728;
+  font-weight: 600;
+}
+
+.st-row {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #dedbd6;
+  border-radius: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 18px;
+  padding: 18px 3px;
+  text-align: left;
+  width: 100%;
+}
+
+.st-row:hover {
+  background: #f7f4f1;
+}
+
+.st-date {
+  min-width: 41px;
+  text-align: center;
+}
+
+.st-date strong,
+.st-date small,
+.st-main strong,
+.st-main small,
+.st-credit span,
+.st-credit small {
+  display: block;
+}
+
+.st-date strong,
+.st-credit strong {
+  color: #841d2b;
+  font: 500 1.75rem/1.1 var(--mono-tabular);
+}
+
+.st-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.st-main small {
+  margin-top: 6px;
+}
+
+.st-status {
+  color: #7b2934;
+  font-size: 0.875rem;
+}
+
+.st-detail {
+  padding-top: 22px;
+}
+
+.st-facts {
+  border-block: 1px solid #dedbd6;
+  display: grid;
+  gap: 10px 24px;
+  grid-template-columns: auto 1fr;
+  padding: 20px 0;
+}
+
+.st-facts dt {
+  color: #67635e;
+}
+
+.st-facts dd {
+  margin: 0;
+}
+
+.st-shell fieldset {
+  border: 0;
+  margin: 20px 0;
+  padding: 0;
+}
+
+.st-shell legend {
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.st-option {
+  align-items: center;
+  display: flex;
+  gap: var(--gap-sm);
+  padding: 5px 0;
+}
+
+.st-option input {
+  accent-color: #8b1728;
+  width: auto;
+}
+
+.st-credit {
+  border-bottom: 1px solid #dedbd6;
+  padding: 10px 0 22px;
+}
+
+.st-credit strong {
+  display: block;
+  font-size: 3rem;
+  margin: 6px 0;
+}
+
+.st-empty {
+  color: #67635e;
+  padding: 16px 0;
+}
+
+@media (max-width: 600px) {
+  .st-row {
+    gap: 10px;
+  }
+
+  .st-date {
+    min-width: 32px;
+  }
+
+  .st-user {
+    align-items: center;
+  }
+
+  .st-main strong {
+    font-size: 1rem;
+  }
+
+  .st-status {
+    font-size: 0.78rem;
+  }
+
+  .st-login {
+    padding: 0;
+  }
+
+  .st-facts {
+    gap: 10px 14px;
+  }
+}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#810d20">
+  <title>学生骨干培训 · 教务工作台</title>
+  <link rel="stylesheet" href="static/css/tokens.css">
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/admin.css">
+  <link rel="stylesheet" href="static/css/events.css">
+  <link rel="stylesheet" href="static/css/roster.css">
+  <link rel="stylesheet" href="static/css/student.css">
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <button class="identity" data-action="landing">
+        <svg viewBox="0 0 40 40" aria-hidden="true" class="brandmark">
+          <rect width="40" height="40" rx="3" fill="currentColor"/>
+          <path d="M5 12l15-6 15 6-15 6z M9 17v13l9 4V21z M22 21v13l9-4V17z" fill="none" stroke="white" stroke-width="2"/>
+        </svg>
+        学生骨干培训
+      </button>
+      <nav id="nav"></nav>
+      <button id="role" class="role"></button>
+    </div>
+  </header>
+  <main id="app"></main>
+  <footer>学生骨干培训 · 培训教务系统</footer>
+  <dialog id="dlg">
+    <div class="dlghead">
+      <h2 id="dialogTitle"></h2>
+      <button aria-label="关闭" data-action="close-modal">✕</button>
+    </div>
+    <div id="dialogBody"></div>
+  </dialog>
+  <div hidden role="status" id="toastbox"></div>
+  <script type="module" src="static/js/app.js"></script>
+</body>
+</html>

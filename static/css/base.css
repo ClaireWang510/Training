@@ -1,0 +1,214 @@
+/* 基础样式与页面骨架：重置、排版、页头页脚、通用布局工具。 */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 15px/1.6 var(--sans);
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+button {
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #b77648;
+  outline-offset: 3px;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* 页头 */
+header {
+  background: var(--surface);
+  border-top: 4px solid var(--red);
+  border-bottom: 1px solid var(--line);
+}
+
+.bar {
+  align-items: center;
+  display: flex;
+  gap: 4vw;
+  margin: auto;
+  max-width: var(--page-max);
+  min-height: 76px;
+  padding: 0 var(--page-pad);
+}
+
+.identity {
+  align-items: center;
+  display: flex;
+  font: 700 22px var(--serif);
+  gap: 12px;
+  letter-spacing: 1px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.brandmark {
+  color: var(--red);
+  height: 36px;
+  width: 36px;
+}
+
+nav {
+  align-self: stretch;
+  display: flex;
+  gap: 1.7vw;
+}
+
+nav button {
+  border-bottom: 2px solid transparent;
+  color: #615d5c;
+  font-weight: 550;
+  padding: 0 4px;
+}
+
+nav button.active {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.role {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+main {
+  margin: auto;
+  max-width: var(--page-max);
+  padding: 0 var(--page-pad);
+}
+
+footer {
+  color: var(--muted-strong);
+  font-size: 12px;
+  margin: 42px auto 0;
+  max-width: var(--page-max);
+  padding: 15px var(--page-pad);
+}
+
+/* 图标 */
+.ico {
+  fill: none;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+  vertical-align: -4px;
+  width: 18px;
+}
+
+/* 面包屑 */
+.crumb {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 23px 0 17px;
+}
+
+.crumb span {
+  color: var(--muted-soft);
+  margin: 0 9px;
+}
+
+/* 通用工具类 */
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.fine {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.empty-note {
+  color: var(--muted);
+  padding: 32px 0;
+  text-align: center;
+}
+
+@media print {
+  header, footer, #toastbox {
+    display: none;
+  }
+}
+
+@media (max-width: 840px) {
+  .bar {
+    flex-wrap: wrap;
+    gap: 0;
+    justify-content: space-between;
+    padding-top: 14px;
+  }
+
+  .bar nav {
+    gap: 20px;
+    order: 3;
+    overflow: auto;
+    width: 100%;
+  }
+
+  .bar nav button {
+    padding: 12px 0;
+    white-space: nowrap;
+  }
+
+  .role {
+    margin: 0 0 0 auto;
+  }
+
+  .identity {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 520px) {
+  .bar,
+  main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .bar nav {
+    gap: 16px;
+  }
+
+  .brandmark {
+    width: 30px;
+  }
+
+  .identity {
+    gap: 6px;
+  }
+
+  .role {
+    font-size: 13px;
+  }
+}

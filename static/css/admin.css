@@ -1,0 +1,259 @@
+/* 管理员视图：班期概览、近期活动、班务概况、学分总表。 */
+
+/* 班期头图 */
+.mast {
+  background: var(--red-deep);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  isolation: isolate;
+  min-height: 235px;
+  overflow: hidden;
+  padding: 38px 42px 34px;
+  position: relative;
+}
+
+.mastArt {
+  height: 100%;
+  opacity: 1;
+  position: absolute;
+  right: -2%;
+  top: 0;
+  width: 47%;
+  z-index: -1;
+}
+
+.term {
+  color: #f2d9d6;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+}
+
+.mast h1 {
+  font: 600 clamp(25px, 3.2vw, 49px)/1.36 var(--serif);
+  letter-spacing: 0.04em;
+  margin: 12px 0 24px;
+  max-width: 77%;
+}
+
+.mastmeta {
+  align-items: center;
+  color: #f6e2dd;
+  display: flex;
+  font-size: 14px;
+  gap: 18px;
+}
+
+.mastmeta button {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* 两栏布局 */
+.split {
+  display: grid;
+  gap: clamp(28px, 4vw, 64px);
+  grid-template-columns: minmax(0, 1.85fr) minmax(250px, 0.9fr);
+  margin-top: 34px;
+}
+
+/* 近期活动列表 */
+.sched {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 17px;
+  padding: 17px 0;
+  text-align: left;
+  width: 100%;
+}
+
+.sched:hover,
+.shortcut:hover {
+  background: #f2f0ec;
+}
+
+.cal {
+  border-right: 1px solid var(--line);
+  min-width: 53px;
+  padding-right: 15px;
+  text-align: center;
+}
+
+.cal b {
+  display: block;
+  font: 32px/1.05 var(--mono-tabular);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sched strong {
+  font-size: 17px;
+}
+
+.sched .fine {
+  margin-top: 3px;
+}
+
+/* 课程类型标签 */
+.tag,
+.type {
+  background: var(--red-soft);
+  border-radius: var(--radius-sm);
+  color: var(--red-muted);
+  display: inline-block;
+  font-size: 12px;
+  padding: 1px 6px;
+}
+
+.type {
+  margin-right: 8px;
+}
+
+.type.optional {
+  background: var(--success-soft);
+  color: var(--success-text);
+}
+
+.status {
+  color: var(--success);
+  font-size: 13px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* 班务概况数字 */
+.nums {
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  display: flex;
+  gap: 15%;
+  padding: 20px 0 17px;
+}
+
+.nums b {
+  color: var(--ink);
+  display: block;
+  font: 36px/1.2 var(--mono-tabular);
+}
+
+/* 快捷入口 */
+.shortcut {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 11px;
+  padding: 17px 0;
+  text-align: left;
+  width: 100%;
+}
+
+.shortcut .ico {
+  color: var(--red);
+}
+
+.shortcut small {
+  color: var(--muted);
+  margin-left: auto;
+}
+
+/* 学分总表 */
+.ledger {
+  margin-top: var(--gap-lg);
+  max-height: 65vh;
+}
+
+.ledger th {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+.ledger td:first-child,
+.ledger th:first-child {
+  background: var(--table-sticky);
+  left: 0;
+  min-width: 99px;
+  position: sticky;
+  z-index: 1;
+}
+
+.ledger th:first-child {
+  z-index: 3;
+}
+
+.ledger td small,
+.ledger th small {
+  color: var(--muted);
+  display: block;
+  font-weight: 400;
+}
+
+@media (max-width: 840px) {
+  .mast {
+    min-height: 195px;
+    padding: 25px;
+  }
+
+  .mast h1 {
+    max-width: 90%;
+  }
+
+  .mastArt {
+    opacity: 0.55;
+  }
+
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  .status {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .mast {
+    padding: 22px 18px;
+  }
+
+  .mast h1 {
+    font-size: 29px;
+    max-width: 100%;
+  }
+
+  .mastmeta {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sched {
+    gap: 9px;
+  }
+
+  .sched strong {
+    font-size: 15px;
+  }
+
+  .cal {
+    min-width: 44px;
+    padding-right: 10px;
+  }
+
+  .split {
+    margin-top: 22px;
+  }
+
+  .status {
+    max-width: 45px;
+    white-space: normal;
+  }
+
+  .sectionhead h2 {
+    font-size: 22px;
+  }
+}

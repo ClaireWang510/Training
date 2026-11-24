@@ -1,0 +1,11 @@
+# 由 training-sheets.timer 触发。按实际部署路径调整 /opt/training。
+[Unit]
+Description=Generate finalized training attendance sheets
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/training
+EnvironmentFile=/opt/training/.env
+Environment=TRAINING_DATA=/opt/training/data
+Environment=PATH=/opt/training/.venv/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/training/.venv/bin/python manage.py finalize_sheets
