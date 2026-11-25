@@ -1,9 +1,9 @@
 // 管理员首页：本期概览、培训班创建与切换、班期编辑。
 
-import { esc, html, isoDate, raw, shiftedDate } from '../lib/dom.js';
-import { bookArt, icon, openModal, toast } from '../lib/ui.js';
-import { store } from '../lib/store.js';
-import { perform } from '../lib/actions.js';
+import { esc, html, isoDate, raw, shiftedDate } from '../../lib/dom.js';
+import { bookArt, icon, openModal, toast } from '../../lib/ui.js';
+import { store } from '../../lib/store.js';
+import { perform } from '../../lib/actions.js';
 
 /** 渲染本期概览。 */
 export function renderHome() {
@@ -46,10 +46,10 @@ export function renderHome() {
           <div><b>${cohort.students.length}</b>参训学员</div>
           <div><b>${cohort.events.length}</b>课程活动</div>
         </div>
-        <button class="shortcut" data-page="roster">${raw(icon('user'))}学员名单<small>查看与导入</small></button>
-        <button class="shortcut" data-page="ledger">${raw(icon('table'))}学分总表<small>登记与补修</small></button>
+        <button class="shortcut" data-action="page" data-page="roster">${raw(icon('user'))}学员名单<small>查看与导入</small></button>
+        <button class="shortcut" data-action="page" data-page="ledger">${raw(icon('table'))}学分总表<small>登记与补修</small></button>
         ${raw(pending.length
-          ? `<button class="shortcut" data-event="${esc(pending[0].id)}">${icon('book')}待登记出勤<small>${pending.length} 场活动</small></button>`
+          ? `<button class="shortcut" data-action="open-event" data-id="${esc(pending[0].id)}">${icon('book')}待登记出勤<small>${pending.length} 场活动</small></button>`
           : '')}
       </section>
     </div>
@@ -59,7 +59,7 @@ export function renderHome() {
 /** 一条近期活动。 */
 function scheduleRow(event) {
   const open = new Date(event.deadline) > new Date();
-  return `<button class="sched" data-event="${esc(event.id)}">`
+  return `<button class="sched" data-action="open-event" data-id="${esc(event.id)}">`
     + `<div class="cal"><b>${esc(event.date.slice(-2))}</b><small>${Number(event.date.slice(5, 7))} 月</small></div>`
     + `<div><strong>${esc(event.title)}</strong>`
     + `<div class="fine"><span class="type ${event.type === '选修' ? 'optional' : ''}">${esc(event.type)}</span>`
@@ -76,7 +76,7 @@ export function crumb(label) {
 /** 打开培训班管理弹窗。 */
 export function cohortMenu() {
   const items = Object.values(store.cohorts)
-    .map((cohort) => `<button class="shortcut" data-cohort="${esc(cohort.key)}">${esc(cohort.name)}<small>${cohort.key === store.db?.key ? '当前班期' : '进入'}</small></button>`)
+    .map((cohort) => `<button class="shortcut" data-action="open-cohort" data-cohort="${esc(cohort.key)}">${esc(cohort.name)}<small>${cohort.key === store.db?.key ? '当前班期' : '进入'}</small></button>`)
     .join('');
 
   openModal('培训班管理', html`
@@ -106,7 +106,7 @@ export function createCohort() {
       return;
     }
     perform('create', { name, start: data.get('start'), end: data.get('end') }, (result) => {
-      import('../lib/navigation.js').then((module) => module.switchCohort(result.key));
+      import('../../lib/navigation.js').then((module) => module.switchCohort(result.key));
     });
   };
 }

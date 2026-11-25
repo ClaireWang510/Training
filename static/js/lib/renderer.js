@@ -28,12 +28,11 @@ export async function render() {
 
   if (store.access === 'admin') {
     navElement.innerHTML = ADMIN_PAGES
-      .map((page) => `<button class="${store.page === page.key ? 'active' : ''}" data-page="${page.key}">${page.label}</button>`)
+      .map((page) => `<button class="${store.page === page.key ? 'active' : ''}" data-action="page" data-page="${page.key}">${page.label}</button>`)
       .join('');
     roleElement.textContent = '退出登录';
     roleElement.onclick = signOut;
     appElement.innerHTML = await renderAdminPage();
-    await afterRender();
     return;
   }
 
@@ -41,7 +40,7 @@ export async function render() {
   roleElement.textContent = '退出登录';
   roleElement.onclick = signOut;
 
-  const { renderStudent, studentCohortSelect } = await import('../pages/student.js');
+  const { renderStudent, studentCohortSelect } = await import('../features/student/index.js');
   appElement.innerHTML = renderStudent();
   appElement.insertAdjacentHTML('afterbegin', studentCohortSelect());
 }
@@ -50,33 +49,21 @@ export async function render() {
 async function renderAdminPage() {
   switch (store.page) {
     case 'events': {
-      const { renderEvents } = await import('../pages/events.js');
+      const { renderEvents } = await import('../features/events/index.js');
       return renderEvents();
     }
     case 'roster': {
-      const { renderRoster } = await import('../pages/roster.js');
+      const { renderRoster } = await import('../features/roster/index.js');
       return renderRoster();
     }
     case 'ledger': {
-      const { renderLedger } = await import('../pages/ledger.js');
+      const { renderLedger } = await import('../features/ledger/index.js');
       return renderLedger();
     }
     default: {
-      const { renderHome } = await import('../pages/home.js');
+      const { renderHome } = await import('../features/home/index.js');
       return renderHome();
     }
-  }
-}
-
-/**
- * 页面内容写入 DOM 后触发的收尾动作。
- * 有些表格依赖已经存在的搜索框等元素，只能在插入后渲染。
- */
-async function afterRender() {
-  if (store.access !== 'admin') return;
-  if (store.page === 'ledger') {
-    const { renderLedgerRows } = await import('../pages/ledger.js');
-    renderLedgerRows();
   }
 }
 

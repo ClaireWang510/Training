@@ -2,6 +2,8 @@
 // 页面渲染与写操作分别位于 lib/renderer.js 与 lib/actions.js，
 // 页面模块只依赖这些模块，避免循环引用。
 
+// 注册各功能模块的交互动作，须在绑定全局事件前完成。
+import './features/register.js';
 import { boot, isModalOpen, toast } from './lib/ui.js';
 import { store } from './lib/store.js';
 import { isBusy, refresh } from './lib/actions.js';

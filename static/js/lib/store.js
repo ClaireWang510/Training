@@ -16,7 +16,35 @@ export const store = {
   page: 'home',
   /** 是否正在进行写操作 */
   busy: false,
+  /**
+   * 页面级临时状态：搜索、筛选、翻页、当前标签页等。
+   * 统一收拢在这里，进入页面时由 resetUiState() 重置，
+   * 避免各页面模块的顶层变量在页面切换后残留。
+   */
+  ui: {
+    roster: { query: '', filterClass: '', page: 0 },
+    ledger: { query: '', filterClass: '', page: 0 },
+    events: { detailId: '', tab: '报名名单', filter: '全部', photoUrls: [] },
+    student: { view: 'activities', selectedEvent: '', processedHash: '' },
+  },
 };
+
+/** 各页面临时状态的默认值。 */
+const UI_DEFAULTS = {
+  roster: () => ({ query: '', filterClass: '', page: 0 }),
+  ledger: () => ({ query: '', filterClass: '', page: 0 }),
+  events: () => {
+    for (const url of store.ui.events.photoUrls ?? []) URL.revokeObjectURL(url);
+    return { detailId: '', tab: '报名名单', filter: '全部', photoUrls: [] };
+  },
+  student: () => ({ view: 'activities', selectedEvent: '', processedHash: '' }),
+};
+
+/** 将某个页面的临时状态恢复为默认值。 */
+export function resetUiState(page) {
+  const factory = UI_DEFAULTS[page];
+  if (factory) store.ui[page] = factory();
+}
 
 /** 订阅状态变化，返回取消订阅的函数。 */
 export function subscribe(listener) {
@@ -95,4 +123,22 @@ export function creditTotals(studentId) {
     else elective += points;
   }
   return [required, elective, required + elective].map((n) => Number(n.toFixed(2)));
+}
+
+/** 当前班期出现过的班级，按中文排序。 */
+export function studentClasses() {
+  return [...new Set((store.db?.students ?? []).map((student) => student.cls))]
+    .sort((a, b) => String(a).localeCompare(b, 'zh-CN'));
+}
+
+/**
+ * 按关键字与班级筛选学员。
+ * 名单页与学分总表共用同一套匹配规则，避免两处条件逐渐走样。
+ */
+export function filterStudents({ query = '', filterClass = '' } = {}) {
+  const keyword = query.trim().toLowerCase();
+  return (store.db?.students ?? []).filter((student) =>
+    (!filterClass || student.cls === filterClass)
+    && [student.name, student.id, student.dept, student.cls, student.grade, student.phone, student.email]
+      .some((value) => String(value ?? '').toLowerCase().includes(keyword)));
 }

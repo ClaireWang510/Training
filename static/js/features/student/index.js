@@ -1,19 +1,13 @@
 // 学员视图：活动报名、我的学分。
 
-import { html, raw } from '../lib/dom.js';
-import { closeModal, openModal, toast } from '../lib/ui.js';
-import { creditTotals, findEvent, registrationOpen, studentStatus, store } from '../lib/store.js';
-import { perform } from '../lib/actions.js';
-
-/** 学员视图的局部状态。 */
-const state = {
-  view: 'activities',
-  selectedEvent: '',
-  processedHash: '',
-};
+import { html, raw } from '../../lib/dom.js';
+import { closeModal, openModal, toast } from '../../lib/ui.js';
+import { creditTotals, findEvent, registrationOpen, store, studentStatus } from '../../lib/store.js';
+import { perform } from '../../lib/actions.js';
 
 /** 读取地址栏中的 #join= 参数。 */
 function readLink() {
+  const state = store.ui.student;
   const hash = location.hash;
   if (!hash.startsWith('#join=')) {
     state.processedHash = '';
@@ -31,16 +25,16 @@ function readLink() {
 
 /** 打开某个活动。 */
 export function pickEvent(id) {
-  state.selectedEvent = id;
-  state.view = 'activities';
-  import('../lib/renderer.js').then((module) => module.render());
+  store.ui.student.selectedEvent = id;
+  store.ui.student.view = 'activities';
+  import('../../lib/renderer.js').then((module) => module.render());
 }
 
 /** 切换学员视图的标签页。 */
 export function switchView(view) {
-  state.view = view;
-  state.selectedEvent = '';
-  import('../lib/renderer.js').then((module) => module.render());
+  store.ui.student.view = view;
+  store.ui.student.selectedEvent = '';
+  import('../../lib/renderer.js').then((module) => module.render());
 }
 
 /** 学员是否还能报名。 */
@@ -57,6 +51,7 @@ function isRegistered(event) {
 
 /** 渲染学员页面。 */
 export function renderStudent() {
+  const state = store.ui.student;
   readLink();
 
   const person = (store.db?.students ?? []).find((student) => String(student.id) === store.studentId);
@@ -66,13 +61,13 @@ export function renderStudent() {
   if (state.selectedEvent) {
     if (!event) {
       return html`<section class="st-shell"><h2>活动未找到</h2><p>请确认活动链接对应当前培训班。</p>`
-        + '<button class="btn" data-student-view="activities">查看本期活动</button></section>';
+        + '<button class="btn" data-action="student-view" data-view="activities">查看本期活动</button></section>';
     }
     return html`<section class="st-shell">${raw(eventDetail(event))}</section>`;
   }
 
   const tabs = [['activities', '活动报名'], ['credits', '我的学分']]
-    .map(([key, label]) => `<button role="tab" aria-selected="${state.view === key}" data-student-view="${key}">${label}</button>`)
+    .map(([key, label]) => `<button role="tab" aria-selected="${state.view === key}" data-action="student-view" data-view="${key}">${label}</button>`)
     .join('');
 
   return html`<section class="st-shell">
@@ -106,7 +101,7 @@ function activities() {
 
   const rows = items.map((event) => {
     const date = String(event.date || '').split('-');
-    return html`<button type="button" class="st-row" data-student-event="${event.id}">
+    return html`<button type="button" class="st-row" data-action="student-event" data-id="${event.id}">
       <span class="st-date"><strong>${date[2] || '—'}</strong><small>${date[1] ? `${Number(date[1])}月` : ''}</small></span>
       <span class="st-main"><strong>${event.title}</strong><small>${event.type} · ${event.points} 学分 · ${event.place || '地点待定'}</small></span>
       <span class="st-status">${studentStatus(event, store.studentId)}</span>
@@ -122,7 +117,7 @@ function eventDetail(event) {
   const open = canRegister(event);
   const mark = event.marks?.[store.studentId];
 
-  return html`<button class="btn" data-student-view="activities">返回活动列表</button>
+  return html`<button class="btn" data-action="student-view" data-view="activities">返回活动列表</button>
     <article class="st-detail">
       <div class="st-meta">${event.type}课程 · ${String(event.points)} 学分</div>
       <h2>${event.title}</h2>
@@ -132,7 +127,7 @@ function eventDetail(event) {
         <dt>报名截止</dt><dd>${String(event.deadline || '').replace('T', ' ')}</dd>
         <dt>我的状态</dt><dd>${studentStatus(event, store.studentId)}${mark ? ` · 实得 ${mark.points} 学分` : ''}</dd>
       </dl>
-      <form id="studentSignupForm">
+      <form id="studentSignupForm" data-action="submit-signup">
         ${raw((open || registered) ? questions(event, open) : '')}
         <div role="alert" class="st-error"></div>
         <div class="actions">
@@ -182,7 +177,7 @@ function transcript() {
 
   const rows = events.map((event) => {
     const mark = event.marks?.[store.studentId];
-    return html`<button class="st-row" data-student-event="${event.id}">
+    return html`<button class="st-row" data-action="student-event" data-id="${event.id}">
       <span class="st-main"><strong>${event.title}</strong><small>${event.type} · ${studentStatus(event, store.studentId)}</small></span>
       <span class="st-status">${mark ? `${mark.points} 分` : '待获学分'}</span>
     </button>`;
@@ -197,9 +192,9 @@ function transcript() {
 
 /** 提交报名。 */
 export function submitSignup(form) {
-  const event = findEvent(state.selectedEvent);
+  const event = findEvent(store.ui.student.selectedEvent);
   if (!event || !canRegister(event) || !store.studentId) {
-    import('../lib/renderer.js').then((module) => module.render());
+    import('../../lib/renderer.js').then((module) => module.render());
     toast('报名已截止或出勤已登记');
     return false;
   }
@@ -243,11 +238,11 @@ export function confirmCancel() {
 
 /** 执行取消报名。 */
 export function cancelSignup() {
-  const event = findEvent(state.selectedEvent);
+  const event = findEvent(store.ui.student.selectedEvent);
   closeModal();
 
   if (!event || !canRegister(event)) {
-    import('../lib/renderer.js').then((module) => module.render());
+    import('../../lib/renderer.js').then((module) => module.render());
     toast('报名已截止或出勤已登记');
     return;
   }
