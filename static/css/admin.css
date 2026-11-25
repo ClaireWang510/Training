@@ -163,8 +163,7 @@
 
 /* 学分总表 */
 .ledger {
-  margin-top: var(--gap-lg);
-  max-height: 65vh;
+  margin-top: 0;
 }
 
 .ledger th {

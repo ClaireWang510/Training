@@ -60,9 +60,9 @@ header {
 .identity {
   align-items: center;
   display: flex;
-  font: 700 22px var(--serif);
+  font: 700 clamp(18px, 1.6vw, 22px)/1.2 var(--serif);
   gap: 12px;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   padding: 0;
   white-space: nowrap;
 }

@@ -87,6 +87,24 @@ export async function handleClick(event) {
     return;
   }
 
+  // 学分总表翻页
+  const ledgerTurn = target.closest('[data-ledger-turn]');
+  if (ledgerTurn) {
+    event.preventDefault();
+    const { turnLedgerPage } = await import('../pages/ledger.js');
+    turnLedgerPage(Number(ledgerTurn.dataset.ledgerTurn));
+    return;
+  }
+
+  // 查看学员详细资料（名单与学分总表共用）
+  const profileButton = target.closest('[data-view-student]');
+  if (profileButton) {
+    event.preventDefault();
+    const { showStudent } = await import('../pages/roster.js');
+    showStudent(profileButton.dataset.viewStudent);
+    return;
+  }
+
   // 登记与更正学分（学分总表中的单元格，比单纯打开活动更具体）
   const markButton = target.closest('[data-student][data-event]');
   if (markButton) {
@@ -141,12 +159,12 @@ export async function handleClick(event) {
     return;
   }
 
-  // 调整培训班分班
+  // 调整学员资料
   const editButton = target.closest('[data-edit]');
   if (editButton) {
     event.preventDefault();
-    const { editStudentClass } = await import('../pages/roster.js');
-    editStudentClass(editButton.dataset.edit);
+    const { editStudentInfo } = await import('../pages/roster.js');
+    editStudentInfo(editButton.dataset.edit);
     return;
   }
 
@@ -211,6 +229,13 @@ export async function handleChange(event) {
     return;
   }
 
+  const ledgerFilter = target.closest('[data-action="ledger-filter"]');
+  if (ledgerFilter) {
+    const { filterLedger } = await import('../pages/ledger.js');
+    filterLedger(ledgerFilter.value);
+    return;
+  }
+
   const rosterFile = target.closest('[data-action="roster-file"]');
   if (rosterFile) {
     const { loadFile } = await import('../pages/roster.js');
@@ -227,8 +252,8 @@ export async function handleInput(event) {
   const target = event.target;
 
   if (target.id === 'searchLedger') {
-    const { renderLedgerRows } = await import('../pages/ledger.js');
-    renderLedgerRows();
+    const { searchLedger } = await import('../pages/ledger.js');
+    searchLedger(target.value);
     return;
   }
 

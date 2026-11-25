@@ -33,6 +33,34 @@ def string(value, size):
     return value.strip()
 
 
+def optional_text(value, size):
+    """可为空的文本字段：统一去除首尾空白并限制长度。"""
+    check(value is None or isinstance(value, str), "请核对文字字段格式")
+    text = (value or "").strip()
+    check(len(text) <= size, "请核对必填字段和文字长度")
+    return text
+
+
+STUDENT_DETAILS = {"phone": 40, "email": 160, "grade": 40, "gender": 10}
+
+
+def apply_student_details(student, source, overwrite_empty=False):
+    """把联系方式等扩展资料写入学员记录。
+
+    批量导入时未填写或未映射的字段保留原值；管理员手工编辑时允许清空。
+    """
+    changed = False
+    for key, size in STUDENT_DETAILS.items():
+        if key in source:
+            value = optional_text(source[key], size)
+            if overwrite_empty or value:
+                if getattr(student, key) != value:
+                    setattr(student, key, value)
+                    changed = True
+    check(student.gender in ("", "男", "女", "其他"), "请核对性别")
+    return changed
+
+
 def number(value):
     n = Decimal(str(value))
     check(n.is_finite() and n == n.quantize(Decimal(".01")), "学分最多保留两位小数")
@@ -102,7 +130,9 @@ def cohort_json(c, sid):
         students = students.filter(student_id=sid)
         entries = entries.filter(student_id=sid)
     data = {"key":str(c.pk),"name":c.name,"version":c.version,"start":str(c.start),"end":str(c.end),
-            "students":[{"id":s.student_id,"name":s.student.name,"cls":s.cls,"dept":s.dept} for s in students],"events":[]}
+            "students":[{"id":s.student_id,"name":s.student.name,"cls":s.cls,"dept":s.dept,
+                         "phone":s.student.phone,"email":s.student.email,"grade":s.student.grade,
+                         "gender":s.student.gender} for s in students],"events":[]}
     events = {}
     for e in c.event_set.order_by("starts","pk"):
         start = timezone.localtime(e.starts)
@@ -182,7 +212,25 @@ def import_roster(c, rows):
         check(re.fullmatch(r"[A-Za-z0-9_-]+",sid) and sid not in {"constructor","prototype","__proto__"}, "学号格式有误")
         s,_ = Student.objects.get_or_create(pk=sid,defaults={"name":name})
         check(s.name==name,"学号 "+sid+" 对应的姓名与已有账号冲突，请核对")
+        if apply_student_details(s,row):
+            s.save()
         Enrollment.objects.update_or_create(student=s,cohort=c,defaults={"dept":string(row["dept"],160),"cls":string(row["cls"],80)})
+
+
+def update_student(c,data):
+    """管理员直接修改本期学员资料。学号是稳定标识，不允许在此改动。"""
+    row = data["student"]
+    check(isinstance(row,dict),"学员资料格式有误")
+    enrollment = Enrollment.objects.select_related("student").filter(
+        cohort=c,student_id=string(row["id"],40)).first()
+    check(enrollment,"学员不属于本期")
+    student = enrollment.student
+    student.name = string(row["name"],80)
+    apply_student_details(student,row,overwrite_empty=True)
+    student.save()
+    enrollment.dept = string(row["dept"],160)
+    enrollment.cls = string(row["cls"],80)
+    enrollment.save()
 
 
 def new_event(c,d):
@@ -285,6 +333,8 @@ def command(request,action):
                     setattr(c,k,v)
             elif action=="roster":
                 import_roster(c,data["rows"])
+            elif action=="student":
+                update_student(c,data)
             elif action=="event":
                 e=new_event(c,data)
             else:
