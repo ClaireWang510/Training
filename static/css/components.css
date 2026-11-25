@@ -301,6 +301,11 @@ dialog::backdrop {
   color: var(--red);
 }
 
+/* 未获得学分的单元格弱化显示，便于快速扫读。 */
+.ledgercell.is-zero {
+  color: var(--muted-soft);
+}
+
 @media (max-width: 520px) {
   #dialogBody {
     padding: 10px 15px 18px;
