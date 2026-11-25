@@ -66,6 +66,13 @@ export function fill(container, content) {
   return container;
 }
 
+/** 只更新页面中的某个区域，避免整页重渲染导致焦点和滚动位置丢失。 */
+export function updateRegion(id, markup) {
+  const container = document.getElementById(id);
+  if (container) container.innerHTML = markup;
+  return container;
+}
+
 /** 由 HTML 字符串生成节点（仅用于内部已转义内容）。 */
 export function fragment(markup) {
   const template = document.createElement('template');

@@ -1,12 +1,11 @@
-// 学员名单：名单浏览、学员详情与资料编辑、Excel/CSV 名单导入向导。
+// 学员名单：Excel / CSV 导入向导。
 
-import { esc, html, raw } from '../lib/dom.js';
-import { openModal, toast } from '../lib/ui.js';
-import { creditTotals, store } from '../lib/store.js';
-import { perform } from '../lib/actions.js';
-import { parseCsv, parseWorkbook } from '../lib/xlsx-read.js';
-import { columnName, download } from '../lib/xlsx-write.js';
-import { crumb } from './home.js';
+import { esc, html, raw } from '../../lib/dom.js';
+import { openModal, toast } from '../../lib/ui.js';
+import { store } from '../../lib/store.js';
+import { perform } from '../../lib/actions.js';
+import { parseCsv, parseWorkbook } from '../../lib/xlsx-read.js';
+import { columnName, download } from '../../lib/xlsx-write.js';
 
 /** 名单字段、中文表头与是否必填。 */
 const FIELDS = [
@@ -23,9 +22,6 @@ const FIELDS = [
 /** 必填字段数量，其余字段可在导入时选择「不导入」。 */
 const REQUIRED_FIELDS = 4;
 
-/** 每页显示的学员数量，名单与学分总表保持一致。 */
-const PAGE_SIZE = 15;
-
 /** 导入向导状态。 */
 const state = {
   sheets: null,
@@ -33,9 +29,6 @@ const state = {
   headerRow: 0,
   mapping: Array(8).fill(-1),
   snapshot: '',
-  query: '',
-  filterClass: '',
-  page: 0,
 };
 
 /** 规范化文本，便于表头匹配。 */
@@ -64,177 +57,6 @@ function headerReady(cells) {
   return guessColumns(cells).slice(0, REQUIRED_FIELDS).every((index) => index >= 0);
 }
 
-/** 渲染学员名单页面。 */
-export function renderRoster() {
-  const classOptions = [...new Set((store.db?.students ?? []).map((student) => student.cls))]
-    .sort((a, b) => String(a).localeCompare(b, 'zh-CN'));
-
-  return html`
-    ${raw(crumb('学员名单'))}
-    <div class="pagehead pagehead-row">
-      <div>
-        <h2>学员名单</h2>
-        <p class="muted">${store.db?.name ?? ''}</p>
-      </div>
-      <button class="btn primary" data-action="import-roster">导入名单</button>
-    </div>
-    <div class="filterbar">
-      <div class="search">
-        <input type="search" aria-label="搜索姓名、学号、学院或班级" placeholder="搜索姓名、学号、学院或班级" value="${state.query}" data-action="roster-search">
-        <span class="search-icon" aria-hidden="true"></span>
-      </div>
-      <select aria-label="按班级筛选" data-action="roster-filter">
-        <option value="">全部班级</option>
-        ${raw(classOptions.map((item) => `<option ${item === state.filterClass ? 'selected' : ''}>${esc(item)}</option>`).join(''))}
-      </select>
-    </div>
-    <div id="ro-results">${raw(rosterTable())}</div>
-  `;
-}
-
-/** 名单表格。 */
-function rosterTable() {
-  const students = (store.db?.students ?? []).filter((student) =>
-    (!state.filterClass || state.filterClass === student.cls)
-    && [student.name, student.id, student.dept, student.cls, student.grade, student.phone, student.email]
-      .some((value) => String(value ?? '').toLowerCase().includes(state.query.trim().toLowerCase())));
-
-  const last = Math.max(0, Math.ceil(students.length / PAGE_SIZE) - 1);
-  state.page = Math.min(state.page, last);
-  const rows = students.slice(state.page * PAGE_SIZE, state.page * PAGE_SIZE + PAGE_SIZE);
-
-  const body = rows.map((student) => '<tr>'
-    + `<td>${esc(String(student.id ?? ''))}</td>`
-    + `<td><button class="ro-name" data-view-student="${esc(String(student.id))}">${esc(String(student.name ?? ''))}</button></td>`
-    + `<td>${esc(String(student.dept ?? ''))}</td>`
-    + `<td>${esc(String(student.cls ?? ''))}</td>`
-    + `<td><button class="ro-btn" data-edit="${esc(String(student.id))}">编辑资料</button></td></tr>`).join('');
-
-  return '<div class="ro-wrap"><table><thead><tr><th>学号</th><th>姓名</th><th>学院</th><th>培训班班级</th><th>操作</th></tr></thead>'
-    + `<tbody>${body}${rows.length ? '' : '<tr><td colspan="5">未找到匹配的学员</td></tr>'}</tbody></table></div>`
-    + `<div class="pager"><span>共 ${students.length} 名学员</span><div class="pager-controls">`
-    + `<button class="btn" ${state.page === 0 ? 'disabled' : ''} data-turn="-1">上一页</button> `
-    + `<span>${state.page + 1} / ${last + 1}</span> `
-    + `<button class="btn" ${state.page === last ? 'disabled' : ''} data-turn="1">下一页</button>`
-    + '</div></div>';
-}
-
-/** 刷新名单表格内容。 */
-export function refreshRosterResults() {
-  const container = document.getElementById('ro-results');
-  if (container) container.innerHTML = rosterTable();
-}
-
-/** 按关键字搜索学员。 */
-export function searchRoster(keyword) {
-  state.query = keyword;
-  state.page = 0;
-  refreshRosterResults();
-}
-
-/** 按班级筛选学员。 */
-export function filterRoster(cls) {
-  state.filterClass = cls;
-  state.page = 0;
-  refreshRosterResults();
-}
-
-/** 翻页。 */
-export function turnPage(delta) {
-  state.page = Math.max(0, state.page + delta);
-  refreshRosterResults();
-}
-
-/** 查看学员详情。 */
-export function showStudent(studentId) {
-  const student = (store.db?.students ?? []).find((item) => String(item.id) === studentId);
-  if (!student) return;
-
-  const [required, elective, total] = creditTotals(student.id);
-  const value = (text) => (text
-    ? raw(esc(String(text)))
-    : raw('<span class="muted">未填写</span>'));
-
-  openModal('学员详情', html`
-    <div class="stu-profile">
-      <div class="stu-profile-head">
-        <span class="stu-avatar" aria-hidden="true">${esc(String(student.name || '?').slice(0, 1))}</span>
-        <div>
-          <h3>${student.name}</h3>
-          <p class="muted">${student.id} · ${student.cls}</p>
-        </div>
-      </div>
-      <dl class="stu-facts">
-        <div><dt>学院</dt><dd>${value(student.dept)}</dd></div>
-        <div><dt>年级</dt><dd>${value(student.grade)}</dd></div>
-        <div><dt>性别</dt><dd>${value(student.gender)}</dd></div>
-        <div><dt>联系方式</dt><dd>${value(student.phone)}</dd></div>
-        <div><dt>邮箱</dt><dd>${value(student.email)}</dd></div>
-        <div><dt>培训班班级</dt><dd>${value(student.cls)}</dd></div>
-      </dl>
-      <div class="stu-credit">
-        <span>总学分 <strong>${total}</strong></span>
-        <small>必修 ${required} 分　／　选修 ${elective} 分</small>
-      </div>
-      <div class="actions">
-        <button class="btn" data-action="close-modal">关闭</button>
-        <button class="btn primary" data-edit="${esc(String(student.id))}">编辑资料</button>
-      </div>
-    </div>
-  `);
-}
-
-/** 编辑学员资料（姓名、学院、班级及联系方式等）。 */
-export function editStudentInfo(studentId) {
-  const student = (store.db?.students ?? []).find((item) => String(item.id) === studentId);
-  if (!student) return;
-
-  const genders = ['', '男', '女', '其他'];
-  openModal('编辑学员资料', html`
-    <form id="ro-edit" class="ro-form">
-      <div class="ro-form-grid">
-        <label class="ro-input-label">学号<input class="ro-sel" value="${student.id}" disabled></label>
-        <label class="ro-input-label">姓名<input class="ro-sel" name="name" value="${student.name}" maxlength="80" required></label>
-        <label class="ro-input-label">学院<input class="ro-sel" name="dept" value="${student.dept}" maxlength="160" required></label>
-        <label class="ro-input-label">培训班班级<input class="ro-sel" name="cls" value="${student.cls}" maxlength="80" required></label>
-        <label class="ro-input-label">年级<input class="ro-sel" name="grade" value="${student.grade ?? ''}" maxlength="40" placeholder="例：2024 级"></label>
-        <label class="ro-input-label">性别
-          <select class="ro-sel" name="gender">
-            ${raw(genders.map((item) => `<option value="${esc(item)}" ${String(student.gender ?? '') === item ? 'selected' : ''}>${esc(item || '未填写')}</option>`).join(''))}
-          </select>
-        </label>
-        <label class="ro-input-label">联系方式<input class="ro-sel" name="phone" value="${student.phone ?? ''}" maxlength="40" placeholder="手机或其他联系方式"></label>
-        <label class="ro-input-label">邮箱<input class="ro-sel" name="email" type="email" value="${student.email ?? ''}" maxlength="160" placeholder="name@example.com"></label>
-      </div>
-      <div class="ro-actions">
-        <button class="btn" type="button" data-action="close-modal">取消</button>
-        <button class="primary">保存资料</button>
-      </div>
-    </form>
-  `);
-
-  const form = document.getElementById('ro-edit');
-  form.onsubmit = (event) => {
-    event.preventDefault();
-    const field = (name) => String(form.elements[name].value ?? '').trim();
-    const row = {
-      id: studentId,
-      name: field('name'),
-      dept: field('dept'),
-      cls: field('cls'),
-      grade: field('grade'),
-      gender: field('gender'),
-      phone: field('phone'),
-      email: field('email'),
-    };
-    if (!row.name || !row.dept || !row.cls) {
-      toast('请填写姓名、学院和培训班班级');
-      return;
-    }
-    perform('student', { student: row });
-  };
-}
-
 /** 打开导入名单弹窗。 */
 export function openImport() {
   state.sheets = null;
@@ -261,7 +83,7 @@ export async function loadFile(file) {
     const data = new Uint8Array(await file.arrayBuffer());
     state.sheets = /\.xlsx$/i.test(file.name)
       ? await parseWorkbook(data)
-      : parseCsv(new TextDecoder().decode(data).replace(/^\uFEFF/, ''));
+      : parseCsv(new TextDecoder().decode(data).replace(/^﻿/, ''));
 
     const best = state.sheets.findIndex((sheet) =>
       sheet.rows.slice(0, 10).some((row) => headerReady(row.cells)));
@@ -364,7 +186,7 @@ function showPreview() {
       `<option value="${position}" ${state.mapping[index] === position ? 'selected' : ''}>${esc(columnName(position))} · ${esc(value ?? '')}</option>`).join('');
 
   const mapControls = FIELDS.map(([, label, required], index) =>
-    `<label class="ro-input-label">${esc(label)}${required ? '' : '（可选）'}<select class="ro-sel" data-map="${index}">${columnOptions(index)}</select></label>`).join('');
+    `<label class="ro-input-label">${esc(label)}${required ? '' : '（可选）'}<select class="ro-sel" data-action="map-column" data-index="${index}">${columnOptions(index)}</select></label>`).join('');
 
   const issueRows = new Set(issues);
   const ordered = [...issues, ...data.filter((row) => !issueRows.has(row))];

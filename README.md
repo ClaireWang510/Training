@@ -112,43 +112,53 @@ static/
 ├── css/                样式表，按层拆
 │   ├── tokens.css      设计变量：颜色、排版、间距的唯一来源
 │   ├── base.css        重置、页头页脚、页面骨架
-│   ├── components.css  通用组件：按钮、表单、表格、对话框
-│   ├── admin.css       管理员视图：概览、学分总表
+│   ├── components.css  通用组件：按钮、表单、表格、分页、筛选、对话框
+│   ├── admin.css       管理员视图：概览
 │   ├── events.css      活动管理视图
-│   ├── roster.css      学员名单与导入向导
+│   ├── roster.css      学员名单、详情与导入向导
 │   └── student.css     学员视图
 └── js/
-    ├── app.js          入口：装配全局事件、启动应用
-    ├── lib/            通用能力
-    │   ├── dom.js      安全 HTML 模板、元素创建、日期格式化
+    ├── app.js          入口：注册动作、装配全局事件、启动应用
+    ├── lib/            基础设施
+    │   ├── dom.js      安全 HTML 模板、元素创建、日期格式化、局部刷新
     │   ├── api.js      后端接口调用与错误封装
-    │   ├── store.js    应用状态与派生数据
+    │   ├── store.js    应用状态、页面临时状态与派生数据
     │   ├── ui.js       对话框、提示条、图标
     │   ├── actions.js  写操作与状态同步
+    │   ├── action-registry.js 交互动作注册表
+    │   ├── interactions.js    交互分发器（data-action → 已注册动作）
     │   ├── renderer.js 页面渲染分发
-    │   ├── navigation.js 视图切换与班期切换
-    │   ├── interactions.js 交互路由（data-* 属性 → 动作）
+    │   ├── navigation.js 视图切换、班期切换与页面状态重置
     │   ├── xlsx-read.js    XLSX / CSV 读取（名单导入）
     │   ├── xlsx-write.js   XLSX 写出（名单、学分表导出）
     │   ├── qr.js           二维码 SVG 生成
     │   └── qr-encoder.js   二维码编码器（第三方实现，独立成文件）
-    └── pages/          页面模块
-        ├── home.js     本期概览、培训班管理、班期编辑
-        ├── events.js   活动列表、详情、问卷、出勤、分享、打印
-        ├── roster.js   名单浏览、学员详情与资料编辑、导入向导
-        ├── ledger.js   学分总表与补修登记
-        └── student.js  学员报名与我的学分
+    ├── components/     可复用的界面片段（纯函数，返回 HTML 字符串）
+    │   ├── filterbar.js   搜索与班级筛选条
+    │   ├── pager.js       列表分页条
+    │   └── table.js       表格、空状态与滚动容器
+    └── features/       按功能组织
+        ├── register.js     汇总引入各功能的 actions.js
+        ├── common/actions.js  导航、弹窗、问卷题增删
+        ├── home/           index.js + actions.js
+        ├── events/         index.js（列表与详情）、forms.js（创建活动）、review.js（出勤复核）、share.js（分享与打印）、actions.js
+        ├── roster/         index.js（名单列表）、detail.js（学员详情与编辑）、import.js（导入向导）、actions.js
+        ├── ledger/         index.js（学分总表）、mark.js（补修登记）、actions.js
+        └── student/        index.js + actions.js
 ```
 
 约定：
 
-- **状态集中管理**：全局状态收拢在 `lib/store.js`，页面模块只读状态。
+- **状态集中管理**：全局状态与页面临时状态（搜索、筛选、翻页、当前标签页）都收拢在 `lib/store.js`；进入页面时由 `navigation.js` 调用 `resetUiState()` 重置，避免模块顶层变量残留。
+- **局部刷新优先**：列表搜索、筛选、翻页只通过 `updateRegion()` 重绘对应区域，不整页重渲染，因此输入框焦点和滚动位置不会丢失。
+- **组件复用**：表格、分页、筛选条等重复结构放在 `components/`，页面只负责组装与数据。
+- **动作就近注册**：每个功能目录的 `actions.js` 调用 `registerActions()` 注册自己的 `data-action`，新增功能不需要改动中心文件。
 - **模板默认转义**：`html` 标签模板对插值做 HTML 转义，需要插入已构建片段时显式使用 `raw()`。
-- **不用内联事件**：交互统一写成 `data-action`、`data-event` 等属性，由 `lib/interactions.js` 映射到页面函数。
+- **不用内联事件**：交互统一写成 `data-action` 属性，由 `lib/interactions.js` 分发到已注册动作。
 - **样式不写在 JS 里**：所有样式位于 `css/` 目录。
-- **依赖方向单一**：页面模块依赖 `lib/`，`lib/` 不反向依赖页面；`renderer.js` 通过动态 `import` 装载页面，避免循环依赖。
+- **依赖方向单一**：`features/` 依赖 `lib/` 与 `components/`，`lib/` 不反向依赖功能模块；`app.js` 负责引入 `features/register.js`，`renderer.js` 通过动态 `import` 装载页面，避免循环依赖。
 
-新增页面时，在 `js/pages/` 下新建模块并导出 `render*` 函数，再在 `lib/renderer.js` 中登记。
+新增功能时，在 `js/features/<功能>/` 下新建 `index.js` 与 `actions.js`，导出 `render*` 函数并在 `lib/renderer.js` 中登记（如果是新页面），再把动作注册到 `features/register.js` 即可。
 
 ## 使用流程
 
