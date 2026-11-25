@@ -13,6 +13,10 @@ class Cohort(models.Model):
 class Student(models.Model):
     id = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=80)
+    phone = models.CharField(max_length=40, blank=True, default="")
+    email = models.CharField(max_length=160, blank=True, default="")
+    grade = models.CharField(max_length=40, blank=True, default="")
+    gender = models.CharField(max_length=10, blank=True, default="")
 
 class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.PROTECT)

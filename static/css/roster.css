@@ -1,35 +1,4 @@
-/* 学员名单视图：名单浏览、分班调整、名单导入向导。 */
-
-.ro-bar,
-.ro-filter,
-.ro-maps,
-.ro-pages,
-.ro-actions {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gap-md);
-}
-
-.ro-bar,
-.ro-pages {
-  justify-content: space-between;
-}
-
-.ro-bar {
-  margin: 0 0 22px;
-}
-
-.ro-bar h2 {
-  font-family: var(--serif);
-  font-size: clamp(26px, 3vw, 38px);
-  font-weight: 600;
-  margin: 0;
-}
-
-.ro-filter {
-  margin: 14px 0;
-}
+/* 学员名单视图：名单浏览、学员详情、资料编辑、名单导入向导。 */
 
 .ro-wrap {
   border-top: 1px solid #dbd6cf;
@@ -64,9 +33,14 @@
   font-weight: 550;
 }
 
-.ro-filter input,
-.ro-filter select,
-.ro-maps select,
+.ro-maps,
+.ro-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-md);
+}
+
 .ro-sel {
   background: #fff;
   border: 1px solid #cfcac4;
@@ -93,6 +67,17 @@
   max-width: 100%;
 }
 
+.ro-form-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin: 16px 0;
+}
+
+.ro-form-grid .ro-sel {
+  width: 100%;
+}
+
 .ro-main,
 .ro-btn {
   background: #fff;
@@ -114,16 +99,6 @@
 .ro-btn:disabled {
   cursor: default;
   opacity: 0.48;
-}
-
-.ro-pages {
-  color: #605b58;
-  font-size: 14px;
-  margin-top: var(--gap-lg);
-}
-
-.ro-pages .ro-btn {
-  padding: 6px 12px;
 }
 
 .ro-summary,
@@ -157,4 +132,87 @@
 
 .ro-actions {
   margin-top: 18px;
+}
+
+/* 学员详情 */
+.stu-profile-head {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 14px;
+  padding: 8px 0 18px;
+}
+
+.stu-avatar {
+  align-items: center;
+  background: var(--red-soft);
+  border-radius: 50%;
+  color: var(--red);
+  display: flex;
+  flex: none;
+  font: 600 22px var(--serif);
+  height: 52px;
+  justify-content: center;
+  width: 52px;
+}
+
+.stu-profile-head h3 {
+  font: 600 22px var(--serif);
+  margin: 0 0 2px;
+}
+
+.stu-profile-head p {
+  margin: 0;
+}
+
+.stu-facts {
+  display: grid;
+  gap: 0 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 6px 0 0;
+}
+
+.stu-facts > div {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+
+.stu-facts dt {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+.stu-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.stu-credit {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 14px 0 4px;
+}
+
+.stu-credit strong {
+  color: var(--red);
+  font: 600 24px var(--mono-tabular);
+}
+
+.stu-credit small {
+  color: var(--muted);
+}
+
+@media (max-width: 520px) {
+  .ro-form-grid,
+  .stu-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .ro-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

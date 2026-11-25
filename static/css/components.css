@@ -69,10 +69,127 @@ button.primary {
   margin: 12px 0 22px;
 }
 
-.pagehead h1 {
+.pagehead h1,
+.pagehead h2 {
   font-family: var(--serif);
   font-size: 32px;
   font-weight: 650;
+}
+
+.pagehead-row {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-md);
+  justify-content: space-between;
+}
+
+/* 搜索与筛选：名单、学分总表共用同一套圆角控件。 */
+.filterbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.filterbar .search {
+  flex: 1 1 280px;
+  max-width: 430px;
+  position: relative;
+}
+
+.filterbar .search-icon {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239b9692' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  height: 16px;
+  left: 14px;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+}
+
+main .filterbar select,
+main .filterbar .search input[type="search"] {
+  appearance: none;
+  background-color: var(--surface);
+  border: 1px solid #d8d3cd;
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 14px;
+  height: 42px;
+  padding: 0 14px;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+main .filterbar .search input[type="search"] {
+  padding-left: 40px;
+  width: 100%;
+}
+
+.filterbar input::placeholder {
+  color: var(--muted-soft);
+}
+
+main .filterbar select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2366635f' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 13px center;
+  background-repeat: no-repeat;
+  background-size: 14px;
+  cursor: pointer;
+  min-width: 150px;
+  padding-right: 38px;
+}
+
+main .filterbar .search input[type="search"]:hover,
+main .filterbar select:hover {
+  border-color: #b9b3ac;
+}
+
+main .filterbar .search input[type="search"]:focus,
+main .filterbar select:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(135, 14, 37, 0.12);
+  outline: none;
+}
+
+/* 列表翻页：学员名单与学分总表共用。 */
+.pager {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 14px;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.pager-controls {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.pager .btn {
+  border-radius: 8px;
+  font-size: 13px;
+  padding: 5px 12px;
+}
+
+/* 可点击的学员姓名。 */
+.ro-name {
+  border-bottom: 1px solid transparent;
+  color: var(--red-text);
+  font-weight: 600;
+  padding: 0;
+  text-align: left;
+}
+
+.ro-name:hover {
+  border-bottom-color: currentColor;
+  color: var(--red);
 }
 
 /* 表单 */
@@ -187,5 +304,23 @@ dialog::backdrop {
 @media (max-width: 520px) {
   #dialogBody {
     padding: 10px 15px 18px;
+  }
+
+  .filterbar .search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .filterbar select {
+    flex: 1 1 140px;
+  }
+
+  .pagehead-row {
+    align-items: flex-start;
+  }
+
+  .pagehead h1,
+  .pagehead h2 {
+    font-size: 28px;
   }
 }

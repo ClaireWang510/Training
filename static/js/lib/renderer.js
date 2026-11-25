@@ -87,7 +87,7 @@ let loginMode = 'student';
 function renderLogin() {
   navElement.innerHTML = '';
   roleElement.onclick = store.access === 'guest' ? null : signOut;
-  roleElement.textContent = store.access === 'guest' ? '培训教务系统' : '退出登录';
+  roleElement.textContent = store.access === 'guest' ? '学生骨干培训管理系统' : '退出登录';
 
   if (store.access === 'admin') {
     appElement.innerHTML = '<div class="pagehead"><h1>培训班管理</h1></div>'

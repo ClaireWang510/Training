@@ -1,5 +1,5 @@
 #!/bin/sh
-# 把培训班教务系统挂到现有 nginx 的 /training/ 子路径下。
+# 把学生骨干培训管理系统挂到现有 nginx 的 /training/ 子路径下。
 #
 # 需要 root 权限（写入 /etc/nginx 并 reload nginx）：
 #   sudo /opt/training/deploy/install-nginx.sh
@@ -10,7 +10,7 @@
 set -e
 
 CONF=/etc/nginx/sites-available/flask_app
-MARK='# ============ 培训班教务系统'
+MARK='# ============ 学生骨干培训管理系统'
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "请用 root 执行：sudo $0" >&2
@@ -33,7 +33,7 @@ path = sys.argv[1]
 text = open(path, encoding="utf-8").read()
 
 block = '''
-    # ============ 培训班教务系统 -> gunicorn 127.0.0.1:8003 ============
+    # ============ 学生骨干培训管理系统 -> gunicorn 127.0.0.1:8003 ============
     location = /training {
         return 301 /training/;
     }

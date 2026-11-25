@@ -79,6 +79,45 @@ class WorkflowTest(TestCase):
         self.assertEqual(self.s.get("/api/state").json(),{"role":"guest"})
         self.assertEqual(Client(enforce_csrf_checks=True).post("/api/login",{},content_type="application/json").status_code,403)
 
+    def test_student_details_visible_and_editable(self):
+        row = {**self.rows[0], "dept": "文学院", "cls": "二班", "grade": "2024 级",
+               "gender": "女", "phone": "13800000000", "email": "student@example.com"}
+        self.assertEqual(self.cmd("student", student=row).status_code, 200)
+
+        state = self.admin.get("/api/state").json()["cohorts"][0]
+        person = next(item for item in state["students"] if item["id"] == "0001")
+        self.assertEqual(
+            (person["dept"], person["cls"], person["grade"], person["gender"], person["phone"], person["email"]),
+            ("文学院", "二班", "2024 级", "女", "13800000000", "student@example.com"))
+
+        own = self.s.get("/api/state").json()["cohorts"][0]["students"][0]
+        self.assertEqual((own["phone"], own["email"]), ("13800000000", "student@example.com"))
+
+        version = Cohort.objects.get(pk=self.key).version
+        self.assertEqual(self.post(self.s, "student", cohort=self.key, version=version, student=row).status_code, 403)
+        self.assertEqual(self.cmd("student", version=0, student=row).status_code, 409)
+        self.assertEqual(self.cmd("student", student={**row, "gender": "未知"}).status_code, 400)
+
+        self.assertEqual(self.cmd("student", student={**row, "phone": "", "email": ""}).status_code, 200)
+        person = next(item for item in self.admin.get("/api/state").json()["cohorts"][0]["students"]
+                      if item["id"] == "0001")
+        self.assertEqual((person["phone"], person["email"]), ("", ""))
+
+    def test_roster_import_optional_details(self):
+        row = {**self.rows[0], "grade": "2023 级", "gender": "男",
+               "phone": "13900000000", "email": "import@example.com"}
+        self.assertEqual(self.cmd("roster", rows=[row]).status_code, 200)
+        person = next(item for item in self.admin.get("/api/state").json()["cohorts"][0]["students"]
+                      if item["id"] == "0001")
+        self.assertEqual((person["grade"], person["gender"], person["phone"], person["email"]),
+                         ("2023 级", "男", "13900000000", "import@example.com"))
+
+        # 未提供的可选字段保留原值，不会被空值覆盖。
+        self.assertEqual(self.cmd("roster", rows=[self.rows[0]]).status_code, 200)
+        person = next(item for item in self.admin.get("/api/state").json()["cohorts"][0]["students"]
+                      if item["id"] == "0001")
+        self.assertEqual(person["phone"], "13900000000")
+
     def test_model_suggestions_do_not_award_credit(self):
         self.join(answers=["早"])
         sheet=self.cmd("sheet",event=self.e).json()["key"]
