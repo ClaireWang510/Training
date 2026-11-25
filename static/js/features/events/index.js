@@ -96,24 +96,41 @@ function eventDetail(event) {
   `;
 
   if (store.ui.events.tab === '活动与问卷') {
-    const questions = (event.questions ?? []).map((question, index) => html`
-      <div class="evQuestion">
-        <b>${index + 1}. ${question.label}</b>
-        <div class="evMeta">${question.type}${question.required ? ' · 必填' : ' · 选填'}</div>
-        ${raw((question.options ?? []).map(esc).join(' / '))}
-      </div>
-    `).join('');
+    const questions = event.questions ?? [];
+    const facts = [
+      ['举办时间', `${event.date} ${event.time || ''}`.trim()],
+      ['活动地点', event.place || '待公布'],
+      ['报名截止', String(event.deadline || '').replace('T', ' ')],
+    ];
+    const questionItems = questions.map((question, index) => html`
+      <li class="evQItem">
+        <div class="evQItemHead">
+          <b>${index + 1}. ${question.label}</b>
+          <span class="evBadge">${question.type}${question.required ? ' · 必填' : ' · 选填'}</span>
+        </div>
+        ${(question.options ?? []).length
+          ? raw(`<div class="evQOptions">${question.options.map((option) => `<span>${esc(option)}</span>`).join('')}</div>`)
+          : raw('')}
+      </li>
+    `);
 
     return html`
       ${raw(header)}
-      <dl>
-        <dt>举办时间</dt><dd>${event.date} ${event.time || ''}</dd>
-        <dt>活动地点</dt><dd>${event.place}</dd>
-        <dt>报名截止</dt><dd>${String(event.deadline).replace('T', ' ')}</dd>
-      </dl>
-      <h3>报名问卷</h3>
-      <p class="evNote">姓名、学号、院系和班级由学员账号带入。</p>
-      ${raw(questions)}
+      <div class="evBody">
+        <dl class="evFacts">
+          ${raw(facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join(''))}
+        </dl>
+        <section class="evPanel">
+          <div class="evPanelHead">
+            <h3>报名问卷</h3>
+            <span class="evPanelMeta">${questions.length ? `共 ${questions.length} 题` : '无需额外填写'}</span>
+          </div>
+          <p class="evNote">姓名、学号、院系和班级由学员账号带入。</p>
+          ${questions.length
+            ? raw(`<ol class="evQList">${questionItems.join('')}</ol>`)
+            : raw('<p class="evPanelEmpty">本次活动报名仅登记基本信息，无需填写额外问卷。</p>')}
+        </section>
+      </div>
     `;
   }
 

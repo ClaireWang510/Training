@@ -125,6 +125,129 @@
   text-align: center;
 }
 
+/* 活动详情：基本信息卡片与问卷面板 */
+.evFacts {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  margin: 0 0 20px;
+}
+
+.evFacts div {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+
+.evFacts dt {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.evFacts dd {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.evPanel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px 22px;
+}
+
+.evPanelHead {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  padding-bottom: 12px;
+}
+
+.evPanelHead h3 {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 650;
+  margin: 0;
+}
+
+.evPanelMeta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.evPanel .evNote {
+  margin: 12px 0 16px;
+}
+
+.evPanelEmpty {
+  color: var(--muted);
+  margin: 18px 0 4px;
+}
+
+/* 题号已写在标题内，列表本身不再显示序号。 */
+.evQList {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.evQItem {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 13px 15px;
+}
+
+.evQItemHead {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.evQItemHead b {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.evBadge {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  flex: none;
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.evQOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.evQOptions span {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted-strong);
+  font-size: 13px;
+  padding: 4px 10px;
+}
+
 /* 照片复核 */
 .evPicture {
   background: #f5f4f1;
@@ -165,5 +288,14 @@
 
   .evActions .btn {
     flex: 1 0 auto;
+  }
+
+  .evPanel {
+    padding: 16px 15px 18px;
+  }
+
+  .evQItemHead {
+    flex-direction: column;
+    gap: 7px;
   }
 }
