@@ -28,7 +28,7 @@ export function renderLedger() {
   const cohort = store.db;
   if (!cohort) return '';
 
-  const headers = cohort.events.map((event) => `<th><button class="link" data-action="open-event" data-id="${esc(event.id)}">${esc(event.title)}</button><small>${esc(event.type)} · ${esc(String(event.points))} 学分</small></th>`);
+  const headers = cohort.events.map((event) => `<button class="link" data-action="open-event" data-id="${esc(event.id)}">${esc(event.title)}</button><small>${esc(event.type)} · ${esc(String(event.points))} 学分</small>`);
   const view = ledgerView();
 
   return html`
@@ -58,7 +58,7 @@ export function renderLedger() {
       empty: '没有匹配的学员',
     }))}
     <div id="ledgerPager">${raw(ledgerPager(view))}</div>
-    <p class="fine">点击学员姓名查看详细资料；点击活动单元格，可登记补修或更正学分。</p>
+    <p class="fine">单元格显示该活动获得的学分（未参加为 0）；点击学员姓名查看资料，点击活动单元格可更正学分。</p>
   `;
 }
 
@@ -68,8 +68,8 @@ function ledgerRows(students) {
   return students.map((student) => {
     const cells = cohort.events.map((event) => {
       const mark = event.marks?.[student.id];
-      const suffix = mark ? ` · ${mark.points}` : '';
-      return `<td><button class="ledgercell" data-action="edit-mark" data-student="${esc(student.id)}" data-event="${esc(event.id)}">${esc(markText(event, student.id))}${esc(suffix)}</button></td>`;
+      const points = String(Number(mark?.points ?? 0));
+      return `<td><button class="ledgercell${points === '0' ? ' is-zero' : ''}" data-action="edit-mark" data-student="${esc(student.id)}" data-event="${esc(event.id)}" aria-label="${esc(student.name)}在${esc(event.title)}获得的学分">${esc(points)}</button></td>`;
     }).join('');
 
     const totals = creditTotals(student.id);
